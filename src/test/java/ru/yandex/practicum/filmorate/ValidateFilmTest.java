@@ -3,21 +3,16 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
-import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ValidateTest {
+public class ValidateFilmTest {
     Film film = new Film();
     FilmController filmController = new FilmController();
-    User user = new User();
-    UserController userController = new UserController();
     ValidationException exception;
 
     @BeforeEach
@@ -27,20 +22,6 @@ public class ValidateTest {
         film.setName("name film");
         film.setDescription("new film");
         film.setReleaseDate(LocalDate.now());
-
-        user.setId(1);
-        user.setLogin("user");
-        user.setBirthday(LocalDate.now());
-        user.setName("name user");
-        user.setEmail("email@mail.ru");
-    }
-
-    @Test
-    public void checkValidationFilmExceptionDuration() {
-        film.setDuration(-1L);
-        exception = assertThrows(ValidationException.class,
-                () -> filmController.validateFilm(film));
-        assertEquals("Продолжительность фильма должна быть положительной", exception.getMessage());
     }
 
     @Test
@@ -72,34 +53,35 @@ public class ValidateTest {
     }
 
     @Test
-    public void checkValidationUserExceptionDate() {
-        user.setBirthday(LocalDate.of(2025,1,1));
+    public void checkValidationFilmExceptionDuration(){
+        film.setDuration(-20L);
         exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
-        assertEquals("Дата рождения не может быть в будущем", exception.getMessage());
+                () -> filmController.validateFilm(film));
+        assertEquals("Продолжительность фильма должна быть положительной", exception.getMessage());
     }
 
     @Test
-    public void checkValidationUserExceptionLogin() {
-        user.setLogin("");
-        exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
-        assertEquals("Логин не может быть пустым и содержать пробелы", exception.getMessage());
+    public void checkForCorrectDate(){
+        film.setReleaseDate(LocalDate.of(2022,1,20));
+        assertDoesNotThrow(() -> filmController.validateFilm(film));
     }
 
     @Test
-    public void checkValidationUserExceptionEmail() {
-        user.setEmail("");
-        exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
-        assertEquals("Электронная почта не может быть пустой и должна содержать символ @",
-                exception.getMessage());
+    public void checkForCorrectDescription(){
+        film.setDescription("Инженер-изобретатель Тимофеев сконструировал машину времени, которая соединила " +
+                "его квартиру с далеким шестнадцатым веком - точнее, с палатами государя Ивана Грозного.");
+        assertDoesNotThrow(() -> filmController.validateFilm(film));
     }
 
     @Test
-    public void checkEmptyName() {
-        user.setName(null);
-        User newUser = userController.addUser(user);
-        assertEquals(newUser.getName(), newUser.getLogin());
+    public void checkForCorrectDuration(){
+        film.setDuration(35L);
+        assertDoesNotThrow(() -> filmController.validateFilm(film));
+    }
+
+    @Test
+    public void checkForCorrectName(){
+        film.setName("Иван Васильевич меняет профессию");
+        assertDoesNotThrow(() -> filmController.validateFilm(film));
     }
 }
