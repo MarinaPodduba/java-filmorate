@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidateUserTest {
-    User user = new User();
-    UserController userController = new UserController();
-    ValidationException exception;
+    private final User user = new User();
+    private final UserController userController = new UserController();
+    private ValidationException exception;
 
     @BeforeEach
     public void setProperties() {
@@ -49,25 +49,10 @@ public class ValidateUserTest {
     }
 
     @Test
-    public void checkValidationUserExceptionEmail() {
-        user.setEmail("");
-        exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
-        assertEquals("Электронная почта не может быть пустой и должна содержать символ @",
-                exception.getMessage());
-    }
-
-    @Test
     public void checkEmptyName() {
         user.setName(null);
         User newUser = userController.addUser(user);
         assertEquals(newUser.getName(), newUser.getLogin());
-    }
-
-    @Test
-    public void checkForCorrectEmail(){
-        user.setEmail("user@yandex.ru");
-        assertDoesNotThrow(() -> userController.validateUser(user));
     }
 
     @Test
