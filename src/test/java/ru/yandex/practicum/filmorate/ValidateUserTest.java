@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
@@ -12,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidateUserTest {
     private final User user = new User();
-    private final UserController userController = new UserController();
+    UserStorage storage = new InMemoryUserStorage();
+    private final UserController userController = new UserController(new UserService(storage));
     private ValidationException exception;
 
     @BeforeEach
@@ -28,7 +32,7 @@ public class ValidateUserTest {
     public void checkValidationUserExceptionDate() {
         user.setBirthday(LocalDate.of(2025,1,1));
         exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
+                () -> userController.addUser(user));
         assertEquals("Дата рождения не может быть в будущем", exception.getMessage());
     }
 
@@ -36,7 +40,7 @@ public class ValidateUserTest {
     public void checkValidationUserExceptionLogin() {
         user.setLogin("");
         exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
+                () -> userController.addUser(user));
         assertEquals("Логин не может быть пустым и содержать пробелы", exception.getMessage());
     }
 
@@ -44,7 +48,7 @@ public class ValidateUserTest {
     public void checkValidationUserExceptionLogin2() {
         user.setLogin("login login");
         exception = assertThrows(ValidationException.class,
-                () -> userController.validateUser(user));
+                () -> userController.addUser(user));
         assertEquals("Логин не может быть пустым и содержать пробелы", exception.getMessage());
     }
 
@@ -58,18 +62,18 @@ public class ValidateUserTest {
     @Test
     public void checkForCorrectLogin(){
         user.setLogin("UserLogin");
-        assertDoesNotThrow(() -> userController.validateUser(user));
+        assertDoesNotThrow(() -> userController.addUser(user));
     }
 
     @Test
     public void checkForCorrectName(){
         user.setName("UserName");
-        assertDoesNotThrow(() -> userController.validateUser(user));
+        assertDoesNotThrow(() -> userController.addUser(user));
     }
 
     @Test
     public void checkForCorrectBirthday(){
         user.setBirthday(LocalDate.of(1998, 2, 18));
-        assertDoesNotThrow(() -> userController.validateUser(user));
+        assertDoesNotThrow(() -> userController.addUser(user));
     }
 }
