@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.yandex.practicum.filmorate.messages.MessagesError.DATA_VERIFICATION;
+
 @Slf4j
 public abstract class StorageInMemory<T extends AbstractData> implements Storage<T> {
     private final Map<Long, T> storage = new HashMap<>();
@@ -19,7 +21,7 @@ public abstract class StorageInMemory<T extends AbstractData> implements Storage
     @Override
     public T add(T data) {
         if (storage.containsValue(data)) {
-            log.error("Данные уже сужествуют");
+            log.error("Данные уже существуют");
             throw new ValidationException("Данные уже существуют");
         }
         id++;
@@ -31,30 +33,34 @@ public abstract class StorageInMemory<T extends AbstractData> implements Storage
 
     @Override
     public void update(T data) {
-        if (!storage.containsKey(data.getId())) {
-            throw new NotFoundException("Данные по id " + data.getId() + " отсутствуют");
-        }
+        dataVerification(data.getId());
         storage.put(data.getId(), data);
+        log.info("Успешно обновлен объект: {}", data);
     }
 
     @Override
     public void delete(long id) {
-        if (!storage.containsKey(id)) {
-            throw new NotFoundException("Данные по id " + id + " отсутствуют");
-        }
+        dataVerification(id);
         storage.remove(id);
+        log.info("Успешно удален объект под id {}", id);
     }
 
     @Override
     public T get(long id) {
-        if (!storage.containsKey(id)) {
-            throw new NotFoundException("Данные по id " + id + " отсутствуют");
-        }
+        dataVerification(id);
+        log.info("Успешно получен объект под id {}", id);
         return storage.get(id);
     }
 
     @Override
     public List<T> getAll() {
+        log.info("Успешно получены все объекты");
         return new ArrayList<>(storage.values());
+    }
+
+    private void dataVerification(long id){
+        if (!storage.containsKey(id)) {
+            throw new NotFoundException(String.format(DATA_VERIFICATION, id));
+        }
     }
 }

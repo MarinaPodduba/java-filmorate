@@ -11,21 +11,23 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.yandex.practicum.filmorate.messages.MessagesError.RELEASE_DATA;
+
 @Service
 public class FilmService extends AbstractService<Film> {
     private final UserService userService;
+    private static final Comparator<Film> COMPARATOR_FILM = Comparator.comparing(Film::getSizeListLikes).reversed();
+    public static final LocalDate MIN_DATA = LocalDate.of(1895, 12, 28);
 
     public FilmService(Storage<Film> storage, UserService userService) {
         this.userService = userService;
         this.storage = storage;
     }
 
-    public static final LocalDate MIN_DATA = LocalDate.of(1895, 12, 28);
-
     @Override
     protected void validator(Film film) {
         if (film.getReleaseDate().isBefore(MIN_DATA)) {
-            throw new ValidationException("Дата релиза должна быть не раньше " + MIN_DATA);
+            throw new ValidationException(RELEASE_DATA + MIN_DATA);
         }
     }
 
@@ -39,13 +41,13 @@ public class FilmService extends AbstractService<Film> {
         Film film = storage.get(id);
         userService.storage.get(userId);
         if (!film.removeLike(userId)) {
-            throw new NotFoundException("Данных по указанному id " + userId + " отсутствуют");
+            throw new NotFoundException(String.format("Данных по указанному id %d отсутствуют", userId));
         }
     }
 
     public List<Film> getPopularFilms(Integer count) {
-        return (storage.getAll()
-                .stream().sorted(Comparator.comparing(Film::getSizeListLikes).reversed()))
+        return storage.getAll()
+                .stream().sorted(COMPARATOR_FILM)
                 .limit(count)
                 .collect(Collectors.toList());
     }
