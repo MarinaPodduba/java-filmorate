@@ -2,58 +2,70 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static ru.yandex.practicum.filmorate.messages.MessagesUserController.*;
 
-@RequestMapping("/users")
 @RestController
+@RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private final HashMap<Long, User> users = new HashMap<>();
-    private long idUser = 1;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
         log.info(ADD_USER);
-        validateUser(user);
-        user.setId(idUser++);
-        users.put(user.getId(), user);
-        return user;
+        return userService.add(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         log.info(UPDATE_USER);
-        if (!users.containsKey(user.getId()))
-            throw new ValidationException("Не удается найти указанного пользователя");
-        validateUser(user);
-        users.put(user.getId(), user);
+        userService.update(user);
         return user;
     }
 
     @GetMapping
     public List<User> getAllUsers() {
         log.info(GET_ALL_USERS);
-        return new ArrayList<>(users.values());
+        return userService.getAll();
     }
 
-    public void validateUser(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable long id) {
+        log.info(GET_USER);
+        return userService.findById(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info(ADD_FRIEND);
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info(DELETE_FRIEND);
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getAllFriends(@PathVariable long id) {
+        log.info(GET_ALL_FRIENGS);
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
+        log.info(GET_COMMON_FRIENDS);
+        return userService.getListMutualFriends(id, otherId);
     }
 }

@@ -2,54 +2,65 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static ru.yandex.practicum.filmorate.messages.MessagesFilmController.*;
 
-@RequestMapping("/films")
 @RestController
+@RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private final HashMap<Long, Film> films = new HashMap<>();
-    private long idFilm = 1;
-    private static final LocalDate MIN_DATA = LocalDate.of(1895, 12, 28);
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
         log.info(ADD_FILM);
-        film.setId(idFilm++);
-        validateFilm(film);
-        films.put(film.getId(), film);
+        filmService.add(film);
         return film;
     }
 
     @PutMapping
-    public Film updetaFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info(UPDATE_FILM);
-        if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Указанного фильма не существует");
-        }
-        validateFilm(film);
-        films.put(film.getId(), film);
+        filmService.update(film);
         return film;
     }
 
     @GetMapping
     public List<Film> getAllFilms() {
         log.info(GET_ALL_FILMS);
-        return new ArrayList<>(films.values());
+        return filmService.getAll();
     }
 
-    public void validateFilm(Film film) {
-        if (film.getReleaseDate().isBefore(MIN_DATA)) {
-            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
-        }
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        log.info(ADD_LIKE);
+        filmService.addLike(id, userId);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable long id) {
+        log.info(GET_FILM);
+        return filmService.findById(id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable long id, @PathVariable long userId) {
+        log.info(DELETE_LIKE);
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping({"/popular"})
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
+        log.info(GET_POPULAR_FILMS);
+        return filmService.getPopularFilms(count);
     }
 }
