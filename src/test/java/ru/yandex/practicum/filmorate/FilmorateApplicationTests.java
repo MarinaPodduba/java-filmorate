@@ -149,8 +149,8 @@ class FilmorateApplicationTests {
 		firstFilm = filmStorage.add(firstFilm);
 		secondFilm = filmStorage.add(secondFilm);
 		thirdFilm = filmStorage.add(thirdFilm);
-		List<Film> Films = filmStorage.getAll();
-		assertThat(Films).hasSize(3);
+		List<Film> films = filmStorage.getAll();
+		assertThat(films).hasSize(3);
 	}
 
 	@Test
