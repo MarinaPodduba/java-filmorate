@@ -29,9 +29,7 @@ public class Film extends AbstractData {
     private Long duration;
     @JsonIgnore
     private List<Long> likes = new ArrayList<>();
-    @NotNull
     private Mpa mpa;
-    @NotNull
     private List<Genre> genres = new ArrayList<>();
 
     public Film(Long id, String name, String description, LocalDate releaseDate, long duration,
