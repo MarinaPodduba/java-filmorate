@@ -7,7 +7,7 @@ import java.util.List;
 public interface Storage<T extends AbstractData> {
     T add(T data);
 
-    void update(T data);
+    T update(T data);
 
     void delete(long id);
 

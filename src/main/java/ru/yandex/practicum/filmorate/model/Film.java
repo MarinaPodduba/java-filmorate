@@ -8,8 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +16,7 @@ import java.util.Set;
 @Setter
 @ToString
 @EqualsAndHashCode(callSuper = false)
+@Builder
 public class Film extends AbstractData {
     @NotBlank
     @NotNull
@@ -28,17 +28,21 @@ public class Film extends AbstractData {
     @Min(1)
     private Long duration;
     @JsonIgnore
-    private Set<Long> likes = new HashSet<>();
+    private List<Long> likes = new ArrayList<>();
+    @NotNull
+    private Mpa mpa;
+    @NotNull
+    private List<Genre> genres = new ArrayList<>();
 
-    public void addLike(Long id) {
-        likes.add(id);
-    }
-
-    public boolean removeLike(Long id) {
-        return likes.remove(id);
-    }
-
-    public int getSizeListLikes() {
-        return likes.size();
+    public Film(Long id, String name, String description, LocalDate releaseDate, long duration,
+                List likes, Mpa mpa, List genres) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = likes;
+        this.mpa = mpa;
+        this.genres = genres;
     }
 }

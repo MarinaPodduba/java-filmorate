@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class AbstractData {
-    private long id;
+    protected long id;
 }

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.inMemory;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.AbstractData;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
@@ -20,27 +19,30 @@ public abstract class StorageInMemory<T extends AbstractData> implements Storage
 
     @Override
     public T add(T data) {
-        if (storage.containsValue(data)) {
-            log.error("Данные уже существуют");
-            throw new ValidationException("Данные уже существуют");
-        }
-        id++;
         data.setId(id);
-        storage.put(data.getId(), data);
+        storage.put(id++, data);
         log.info("Успешно добавлены данные {}", data);
         return data;
     }
 
     @Override
-    public void update(T data) {
+    public T update(T data) {
         dataVerification(data.getId());
-        storage.put(data.getId(), data);
+        if (storage.containsKey(data.getId())) {
+            storage.put(data.getId(), data);
+        } else {
+            throw new NotFoundException("id не найден");
+        }
         log.info("Успешно обновлен объект: {}", data);
+        return data;
     }
 
     @Override
     public void delete(long id) {
         dataVerification(id);
+        if (!storage.containsKey(id)) {
+            throw new NotFoundException("id не найден");
+        }
         storage.remove(id);
         log.info("Успешно удален объект под id {}", id);
     }
@@ -48,8 +50,12 @@ public abstract class StorageInMemory<T extends AbstractData> implements Storage
     @Override
     public T get(long id) {
         dataVerification(id);
-        log.info("Успешно получен объект под id {}", id);
-        return storage.get(id);
+        if (storage.containsKey(id)) {
+            log.info("Успешно получен объект под id {}", id);
+            return storage.get(id);
+        } else {
+            throw new NotFoundException("id не найден");
+        }
     }
 
     @Override
@@ -58,7 +64,7 @@ public abstract class StorageInMemory<T extends AbstractData> implements Storage
         return new ArrayList<>(storage.values());
     }
 
-    private void dataVerification(long id){
+    private void dataVerification(long id) {
         if (!storage.containsKey(id)) {
             throw new NotFoundException(String.format(DATA_VERIFICATION, id));
         }

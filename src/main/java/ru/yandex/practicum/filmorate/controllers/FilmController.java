@@ -49,7 +49,7 @@ public class FilmController {
     @GetMapping("/{id}")
     public Film getFilm(@PathVariable long id) {
         log.info(GET_FILM);
-        return filmService.findById(id);
+        return filmService.get(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
