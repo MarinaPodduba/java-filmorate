@@ -9,13 +9,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode(exclude = {"id"}, callSuper = false)
-@Builder
 public class User extends AbstractData {
     private long id;
     @Email
@@ -26,12 +21,4 @@ public class User extends AbstractData {
     private LocalDate birthday;
     @JsonIgnore
     private final Set<Long> friends = new HashSet<>();
-
-    public void addFriend(Long id) {
-        friends.add(id);
-    }
-
-    public void removeFriend(Long id) {
-        friends.remove(id);
-    }
 }

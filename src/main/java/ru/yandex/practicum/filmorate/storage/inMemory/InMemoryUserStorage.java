@@ -4,6 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage extends StorageInMemory<User> implements UserStorage {
 }
