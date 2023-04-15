@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 public class User extends AbstractData {
     private long id;
     @Email
