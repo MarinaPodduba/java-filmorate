@@ -60,7 +60,6 @@ class FilmorateApplicationTests {
 
         films.add(filmOne);
         films.add(filmTwo);
-
         User userOne = new User();
         userOne.setId(1L);
         userOne.setName("Name1");
@@ -81,7 +80,6 @@ class FilmorateApplicationTests {
         friend.setLogin("yandex3");
         friend.setEmail("yandex3@yandex.ru");
         friend.setBirthday(LocalDate.of(2000, 1, 5));
-
         users.add(userOne);
         users.add(userTwo);
         users.add(friend);
@@ -101,7 +99,6 @@ class FilmorateApplicationTests {
     @Sql({"/schema.sql", "/test.sql"})
     public void testGetFilmById() {
         Film dbFilm = filmStorage.get(1L);
-
         Assertions.assertEquals(films.get(0).getId(), dbFilm.getId());
         Assertions.assertEquals(films.get(0).getName(), dbFilm.getName());
         Assertions.assertEquals(films.get(0).getDescription(), dbFilm.getDescription());
