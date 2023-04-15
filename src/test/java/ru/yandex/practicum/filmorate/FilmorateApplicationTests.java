@@ -114,7 +114,9 @@ class FilmorateApplicationTests {
     @Sql({"/schema.sql", "/test.sql"})
     public void testDeleteFilmById() {
         filmStorage.delete(films.get(0).getId());
-        Assertions.assertThrows(NotFoundException.class, () -> {filmStorage.get(films.get(0).getId());});
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            filmStorage.get(films.get(0).getId());
+        });
     }
 
     @Test
@@ -155,7 +157,9 @@ class FilmorateApplicationTests {
     @Sql({"/schema.sql", "/test.sql"})
     public void testDeleteUserById() {
         userStorage.delete(1L);
-        Assertions.assertThrows(NotFoundException.class, () -> {userStorage.get(1L);});
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            userStorage.get(1L);
+        });
     }
 
     @Test
