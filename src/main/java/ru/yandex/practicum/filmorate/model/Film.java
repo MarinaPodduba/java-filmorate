@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import ru.yandex.practicum.filmorate.constraints.Release;
@@ -31,7 +30,4 @@ public class Film extends AbstractData {
     @NotNull
     private Mpa mpa;
     private Set<Genre> genres = new HashSet<>();
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    private Set<Long> likes = new HashSet<>();
 }
