@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUser(@PathVariable long id) {
         log.info(GET_USER);
-        return userService.findById(id);
+        return userService.get(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

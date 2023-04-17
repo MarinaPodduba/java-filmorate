@@ -8,5 +8,5 @@ public class MessagesError {
     public static final String LOG_NOT_FOUND_EXCEPTION = "Возникла ошибка 404: {}";
     public static final String LOG_HANDLE_EXCEPTION = "Возникла ошибка 500: {}";
     public static final String DATA_VERIFICATION = "Данные по id %d отсутствуют";
-    public static final String RELEASE_DATA = "Дата релиза должна быть не раньше ";
+    public static final String DATA_NOT_FOUND = "Данные не найдены";
 }

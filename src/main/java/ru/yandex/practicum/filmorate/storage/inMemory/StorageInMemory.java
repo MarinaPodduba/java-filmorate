@@ -6,29 +6,22 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.AbstractData;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ru.yandex.practicum.filmorate.messages.MessagesError.DATA_VERIFICATION;
 
 @Slf4j
 public abstract class StorageInMemory<T extends AbstractData> implements Storage<T> {
     private final Map<Long, T> storage = new HashMap<>();
-    private long id = 0L;
 
     @Override
-    public T add(T data) {
+    public void add(T data) {
         if (storage.containsValue(data)) {
             log.error("Данные уже существуют");
             throw new ValidationException("Данные уже существуют");
         }
-        id++;
-        data.setId(id);
         storage.put(data.getId(), data);
         log.info("Успешно добавлены данные {}", data);
-        return data;
     }
 
     @Override
@@ -58,7 +51,7 @@ public abstract class StorageInMemory<T extends AbstractData> implements Storage
         return new ArrayList<>(storage.values());
     }
 
-    private void dataVerification(long id){
+    private void dataVerification(long id) {
         if (!storage.containsKey(id)) {
             throw new NotFoundException(String.format(DATA_VERIFICATION, id));
         }
